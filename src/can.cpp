@@ -8,7 +8,6 @@ void oxCanSetup()
 {
     pinMode(OX_CAN_PIN, INPUT_PULLDOWN);
     attachInterrupt(OX_CAN_PIN, oxCanISR, CHANGE);
-
     oxCanState = digitalRead(OX_CAN_PIN);
 }
 

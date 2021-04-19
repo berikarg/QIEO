@@ -15,17 +15,12 @@ void deepSleepSetup()
     timerAlarmEnable(deepSleepTimer);
 
     if(oxCanState)
-    {
-      esp_sleep_enable_ext0_wakeup(OX_CAN_PIN, 0); // Configure the control button as a wake up source
-    }
+      esp_sleep_enable_ext0_wakeup(OX_CAN_PIN, 0);  // If can was inserted during bootup configure 
+                                                    // mc to wake up from can extraction
     else
-    {
-      esp_sleep_enable_ext0_wakeup(OX_CAN_PIN, 1); // Configure the control button as a wake up source
-    }
-    
+      esp_sleep_enable_ext0_wakeup(OX_CAN_PIN, 1);
 
-    //esp_sleep_enable_ext0_wakeup(OX_CAN_PIN, 0); // Configure the control button as a wake up source
-    esp_sleep_enable_ext1_wakeup(WAKEUP_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);// Configure PINS 32,33,35,36 as wake up sources
+    esp_sleep_enable_ext1_wakeup(WAKEUP_PIN_BITMASK, ESP_EXT1_WAKEUP_ANY_HIGH);// Configure PINS 32,34,35 as wake up sources
 }
 
 void IRAM_ATTR onDeepSleepTimer()

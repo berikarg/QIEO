@@ -20,10 +20,9 @@ void setup()
     Serial.println("Initializing...");
     // Initialize sensor
     if (!qieoPLX.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
-    {
-        Serial.println("MAX3010X was not found.");
-    }
-    qieoPLX.setup(qieoPLX.ledBrightness, qieoPLX.sampleAverage, qieoPLX.ledMode, qieoPLX.sampleRate, qieoPLX.pulseWidth, qieoPLX.adcRange); //Configure sensor with these settings
+        Serial.println("MAX30102 was not found.");
+    qieoPLX.setup(qieoPLX.ledBrightness, qieoPLX.sampleAverage, qieoPLX.ledMode, 
+                    qieoPLX.sampleRate, qieoPLX.pulseWidth, qieoPLX.adcRange); //Configure sensor with these settings
     qieoPLX.shutDown();
     qieoPLX.sleepFlag = true;
 
@@ -59,6 +58,7 @@ void setup()
 void loop()
 {
     readBtnPresses(); // check if user pressed the button
+    //!TODO Refactor this
     if(!qieoPLX.sleepFlag)
     {
         if(qieoPLX.firstReading)
