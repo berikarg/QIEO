@@ -1,7 +1,7 @@
 #ifndef CAN_H
 #define CAN_H
 
-#define OX_CAN_PIN GPIO_NUM_13
+#define OX_CAN_PIN GPIO_NUM_27
 
 void oxCanSetup();
 IRAM_ATTR void oxCanISR();

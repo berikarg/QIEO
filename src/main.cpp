@@ -61,13 +61,7 @@ void loop()
     //!TODO Refactor this
     if(!qieoPLX.sleepFlag)
     {
-        if(qieoPLX.firstReading)
-        {
-            if(checkFinger())
-                checkPLX();
-        }
-        else
-            checkPLX();
+        checkPLX();
     }
 
     if(batteryTimerFlag)
@@ -83,9 +77,8 @@ void loop()
 } // main loop
 
 void checkPLX()
-{
-        
-    if(qieoPLX.firstReading)
+{ 
+    if(qieoPLX.firstReading && checkFinger())
     {
         makeVibration();
         qieoPLX.firstReading = false;
@@ -130,11 +123,13 @@ void checkPLX()
     }
 }
 
-// checks if finger is attached.
-// Waits for 5 sec
-// Returns false if a button is pressed or 
-// time run out
-// !TODO maybe combine if and else if parts as they do the same
+/*
+* Checks if finger is attached.
+* Waits for 5 sec
+* Returns false if a button is pressed or 
+* time run out
+* !TODO maybe combine if and else if parts as they do the same
+*/
 bool checkFinger()
 {
     unsigned long btnPressTime = millis();

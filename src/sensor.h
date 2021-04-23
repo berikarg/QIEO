@@ -48,7 +48,7 @@ public:
 
     bool sleepFlag;         // sensor flag
     bool firstReading;
-    double HR;              //overall SpO2 that is returned to user
+    double HR;              //overall HR that is returned to user
     double SpO2;            //overall SpO2 that is returned to user
     int loopCnt;
 
