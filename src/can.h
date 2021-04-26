@@ -6,5 +6,6 @@
 void oxCanSetup();
 IRAM_ATTR void oxCanISR();
 extern RTC_DATA_ATTR int oxCanState;
+extern bool oxCanCheckFlag; //tells to check the state of ox can
 
 #endif

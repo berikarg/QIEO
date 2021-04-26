@@ -77,6 +77,19 @@ void PLX::estimateSpO2()
     Serial.print("iSpO2 = "); Serial.print(iSpO2); Serial.print("; R = "); Serial.println(R);
 }
 
+/*
+* Instructions set for aborting pulseoximeter operation
+* Called when finger is retracted, the control button is pressed or
+* timeout is reached
+*/
+void PLX::abort()
+{
+    sleepFlag = true;
+    shutDown();
+    makeVibration();
+    btnCNTR = 0;
+}
+
 double getAvg(double* arr, int arrSize)
 {
     double runningSum = 0;

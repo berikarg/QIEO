@@ -10,7 +10,7 @@
 #define MAX_SPO2 100.0
 #define MIN_SPO2 85.0
 
-#define FINGER_ON 50000 // if ir signal is lower than this , it indicates your finger is not on the sensor
+#define FINGER_ON 50000 // if ir signal is lower than this, it indicates your finger is not on the sensor
 #define MAX_BPS 180
 #define MIN_BPS 45
 
@@ -52,6 +52,7 @@ public:
     void updateAvgAndRMS(double ir, double red);
     void estimateHR(double ir);
     void estimateSpO2();
+    void abort();
 };
 
 double getAvg(double* arr, int arrSize);

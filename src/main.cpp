@@ -73,6 +73,14 @@ void loop()
         batteryChargeStartIndication();
         chargerPluggedInFlag = false;
     }
+    if(oxCanCheckFlag)                              //oxCanCheckFlag rises from changing ox can
+    {
+        delay(20);                                  //delay is for debouncing
+        oxCanState = digitalRead(OX_CAN_PIN);
+        Serial.print("OxCanState = ");
+        Serial.println(oxCanState);
+        oxCanCheckFlag = false;
+    }
 } // main loop
 
 void checkPLX()
@@ -87,18 +95,15 @@ void checkPLX()
     while (qieoPLX.available() && !qieoPLX.sleepFlag) // doublecheking the sleep condition because 
     {                                                 // otherwise it causes problems sometimes
         qieoPLX.loopCnt++;
-        double red = qieoPLX.getIR(); // chinese manufacturer has switched
-        double ir = qieoPLX.getRed(); // the places of red and IR LEDs
+        double red = qieoPLX.getIR();                 // chinese manufacturer has switched
+        double ir = qieoPLX.getRed();                 // the places of red and IR LEDs
 
         // abort if finger is not attached or button is pressed
         if(btnCNTR > 0 || ir < FINGER_ON)
         {
             Serial.print("Finger is not found. Turning OFF, IR value = ");
             Serial.println(ir);
-            qieoPLX.sleepFlag = true;
-            qieoPLX.shutDown();
-            makeVibration();
-            btnCNTR = 0;
+            qieoPLX.abort();
             return;
         }
 
@@ -141,10 +146,7 @@ bool checkFinger()
         if(btnCNTR > 0 || millis() - btnPressTime > 5000)
         {
             Serial.println("No contact for 5 sec. Turning OFF");
-            qieoPLX.sleepFlag = true;
-            qieoPLX.shutDown();
-            makeVibration();
-            btnCNTR = 0;
+            qieoPLX.abort();
             return false;
         }
     }

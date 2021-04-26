@@ -11,9 +11,9 @@ hw_timer_t * batteryTimer = NULL;
 /* Battery timer setup */
 void batteryTimerSetup()
 {
-    batteryTimer = timerBegin(0, 800, true); // setting prescaler to 800 makes timer tick 100,000 times per second 
+    batteryTimer = timerBegin(0, 8000, true); // setting prescaler to 8000 makes timer tick 10,000 times per second 
     timerAttachInterrupt(batteryTimer, &onBatteryTimer, true);
-    timerAlarmWrite(batteryTimer, 1000000, true); // alarm each 1,000,000/100,000 = 10 sec 
+    timerAlarmWrite(batteryTimer, BATTERY_CHECK_INTERVAL*10000, true); // alarm each BATTERY_CHECK_INTERVAL seconds 
     timerAlarmEnable(batteryTimer);
 
     pinMode(CHARGER_IN_PIN, INPUT_PULLDOWN);

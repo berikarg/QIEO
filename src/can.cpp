@@ -3,6 +3,7 @@
 #include "button.h"
 
 RTC_DATA_ATTR int oxCanState = 0;
+bool oxCanCheckFlag = false;
 
 void oxCanSetup()
 {
@@ -13,7 +14,7 @@ void oxCanSetup()
 
 IRAM_ATTR void oxCanISR()
 {
-    oxCanState = !oxCanState;
+    oxCanCheckFlag = true;
     oxBtnTimerValue = 0;
     timerWrite(oxBtnTimer, oxBtnTimerValue); // reload oxygen button timer
 }
