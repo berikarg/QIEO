@@ -22,7 +22,7 @@ void setup()
     if (!qieoPLX.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
         Serial.println("MAX30102 was not found.");
     qieoPLX.setup(qieoPLX.ledBrightness, qieoPLX.sampleAverage, qieoPLX.ledMode, 
-                    qieoPLX.sampleRate, qieoPLX.pulseWidth, qieoPLX.adcRange); //Configure sensor with these settings
+                    qieoPLX.sampleRate, qieoPLX.pulseWidth, qieoPLX.adcRange);
     qieoPLX.shutDown();
     qieoPLX.sleepFlag = true;
 
@@ -58,7 +58,6 @@ void setup()
 void loop()
 {
     readBtnPresses(); // check if user pressed the button
-    //!TODO Refactor this
     if(!qieoPLX.sleepFlag)
     {
         checkPLX();
@@ -77,7 +76,7 @@ void loop()
 } // main loop
 
 void checkPLX()
-{ 
+{
     if(qieoPLX.firstReading && checkFinger())
     {
         makeVibration();
@@ -85,41 +84,41 @@ void checkPLX()
     }
 
     qieoPLX.check(); //poll sensor for new data
-    while (qieoPLX.available())
-    {
-    qieoPLX.loopCnt++;
-    double red = qieoPLX.getIR(); // chinese manufacturer is a rediska
-    double ir = qieoPLX.getRed();
+    while (qieoPLX.available() && !qieoPLX.sleepFlag) // doublecheking the sleep condition because 
+    {                                                 // otherwise it causes problems sometimes
+        qieoPLX.loopCnt++;
+        double red = qieoPLX.getIR(); // chinese manufacturer has switched
+        double ir = qieoPLX.getRed(); // the places of red and IR LEDs
 
-    // abort if finger is not attached or button is pressed
-    if(btnCNTR > 0 || ir < FINGER_ON){
-        Serial.print("Finger is not found. Turning OFF, IR value = ");
-        Serial.println(ir);
-        //turn the sensor OFF
-        qieoPLX.sleepFlag = true;
-        qieoPLX.shutDown();
-        makeVibration();
-        btnCNTR = 0;
-        return;
-    }
-
-    qieoPLX.updateAvgAndRMS(ir, red);
-    qieoPLX.estimateHR(ir);
-    if((qieoPLX.loopCnt % SPO2_INTERVAL) == 0)
-    {
-        qieoPLX.estimateSpO2();
-        Serial.print("Avg SpO2: ");
-        Serial.print(qieoPLX.SpO2);
-        Serial.print(" HR: ");
-        Serial.println(qieoPLX.HR);
-
-        if(qieoPLX.SpO2 < MAX_SPO2 && qieoPLX.SpO2 > MIN_SPO2)
+        // abort if finger is not attached or button is pressed
+        if(btnCNTR > 0 || ir < FINGER_ON)
         {
-            showSpO2LedPanel(qieoPLX.SpO2);
-            sendBLEData(qieoPLX.HR, qieoPLX.SpO2);
+            Serial.print("Finger is not found. Turning OFF, IR value = ");
+            Serial.println(ir);
+            qieoPLX.sleepFlag = true;
+            qieoPLX.shutDown();
+            makeVibration();
+            btnCNTR = 0;
+            return;
         }
-    }
-    qieoPLX.nextSample();
+
+        qieoPLX.updateAvgAndRMS(ir, red);
+        qieoPLX.estimateHR(ir);
+        if((qieoPLX.loopCnt % SPO2_INTERVAL) == 0)
+        {
+            qieoPLX.estimateSpO2();
+            Serial.print("Avg SpO2: ");
+            Serial.print(qieoPLX.SpO2);
+            Serial.print(" HR: ");
+            Serial.println(qieoPLX.HR);
+
+            if(qieoPLX.SpO2 < MAX_SPO2 && qieoPLX.SpO2 > MIN_SPO2)
+            {
+                showSpO2LedPanel(qieoPLX.SpO2);
+                sendBLEData(qieoPLX.HR, qieoPLX.SpO2);
+            }
+        }
+        qieoPLX.nextSample();
     }
 }
 
@@ -128,32 +127,22 @@ void checkPLX()
 * Waits for 5 sec
 * Returns false if a button is pressed or 
 * time run out
-* !TODO maybe combine if and else if parts as they do the same
 */
 bool checkFinger()
 {
     unsigned long btnPressTime = millis();
     // do not start before finger is attached, wait 5 sec before
-    while(qieoPLX.getIR() < 50000)
+    while(qieoPLX.getIR() < FINGER_ON)
     {
         Serial.print("Finger is not detected. IR value = ");
         Serial.println(qieoPLX.getIR());
         delay(100); // no need to check if user attached finger too often
-        // abort if 5 sec has passed
-        if(millis() - btnPressTime > 5000)
+        // abort if button has been pressed or 5 sec has passed
+        if(btnCNTR > 0 || millis() - btnPressTime > 5000)
         {
             Serial.println("No contact for 5 sec. Turning OFF");
             qieoPLX.sleepFlag = true;
             qieoPLX.shutDown();
-            makeVibration();
-            return false;
-        }
-        // turn the sensor OFF if a button is pressed
-        else if(btnCNTR > 0)
-        {
-            qieoPLX.sleepFlag = true;
-            qieoPLX.shutDown();
-            Serial.println("Abort pulseoximeter...");
             makeVibration();
             btnCNTR = 0;
             return false;

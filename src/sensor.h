@@ -2,19 +2,13 @@
 #define SENSOR_H
 
 //CUSTOM DEFINITION
-#define MAX30102ORIG //if you have Sparkfun's MAX30105 breakout board , try #define MAX30105
-//#define DEEPSLEEP // TIMEOUT or TOUCH to go to SLEEP for TFT_DISPLAY
-
-#define PRINT
-#define MAXIMREFDESIGN
-
 #define LPF_RATE 0.95    // low pass filter coefficient
 #define IR_LPF_COEF 0.85 //IR filter coefficient to remove notch, should be smaller than LPF_RATE
 #define HR_LPF_COEF 0.90 // low pass filter coefficient for HRM in bpm
 #define SPO2_LPF_COEF 0.70 // low pass filter coefficient for HRM in bpm
 
 #define MAX_SPO2 100.0
-#define MIN_SPO2 80.0
+#define MIN_SPO2 85.0
 
 #define FINGER_ON 50000 // if ir signal is lower than this , it indicates your finger is not on the sensor
 #define MAX_BPS 180
